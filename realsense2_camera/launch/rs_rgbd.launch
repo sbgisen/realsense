@@ -38,7 +38,7 @@ Processing enabled by this node:
 -->
 
 <launch>
-  <arg name="camera"              default="camera"/>
+  <arg name="camera"              default="realsense_front"/>
   <arg name="manager"             default="realsense2_camera_manager"/>
 
   <!-- Camera device specific arguments -->
@@ -75,7 +75,7 @@ Processing enabled by this node:
   <arg name="accel_fps"           default="1000"/>
   <arg name="enable_imu"          default="true"/>
 
-  <arg name="enable_pointcloud"   default="false"/>
+  <arg name="enable_pointcloud"   default="true"/>
   <arg name="enable_sync"         default="true"/>
   <arg name="align_depth"         default="true"/>
 
@@ -99,7 +99,7 @@ Processing enabled by this node:
   <arg name="rgb_processing"                  default="true"/>
   <arg name="debayer_processing"              default="false" />
   <arg name="ir_processing"                   default="false"/>
-  <arg name="depth_processing"                default="false"/>
+  <arg name="depth_processing"                default="true"/>
   <arg name="depth_registered_processing"     default="true"/>
   <arg name="disparity_processing"            default="false"/>
   <arg name="disparity_registered_processing" default="false"/>
@@ -147,6 +147,28 @@ Processing enabled by this node:
       <arg name="gyro_fps"                 value="$(arg gyro_fps)"/>
       <arg name="accel_fps"                value="$(arg accel_fps)"/>
       <arg name="enable_imu"               value="$(arg enable_imu)"/>
+
+      <arg name="base_frame_id" value="realsense_front_link"/>
+      <arg name="depth_frame_id" value="realsense_front_depth_frame"/>
+      <arg name="infra1_frame_id" value="realsense_front_left_ir_frame"/>
+      <arg name="infra2_frame_id" value="realsense_front_right_ir_frame"/>
+      <arg name="color_frame_id" value="realsense_front_color_frame"/>
+      <arg name="fisheye_frame_id" value="realsense_front_fisheye_frame"/>
+      <arg name="imu_gyro_frame_id" value="realsense_front_imu_gyro_frame"/>
+      <arg name="imu_accel_frame_id" value="realsense_front_imu_accel_frame"/>
+
+      <arg name="depth_optical_frame_id"   value="realsense_front_depth_optical_frame"/>
+      <arg name="infra1_optical_frame_id"  value="realsense_front_infra1_optical_frame"/>
+      <arg name="infra2_optical_frame_id"  value="realsense_front_infra2_optical_frame"/>
+      <arg name="color_optical_frame_id"   value="realsense_front_color_optical_frame"/>
+      <arg name="fisheye_optical_frame_id" value="realsense_front_fisheye_optical_frame"/>
+      <arg name="accel_optical_frame_id"   value="realsense_front_accel_optical_frame"/>
+      <arg name="gyro_optical_frame_id"    value="realsense_front_gyro_optical_frame"/>
+
+      <arg name="aligned_depth_to_color_frame_id"   value="realsense_front_aligned_depth_to_color_frame"/>
+      <arg name="aligned_depth_to_infra1_frame_id"  value="realsense_front_aligned_depth_to_infra1_frame"/>
+      <arg name="aligned_depth_to_infra2_frame_id"  value="realsense_front_aligned_depth_to_infra2_frame"/>
+      <arg name="aligned_depth_to_fisheye_frame_id" value="realsense_front_aligned_depth_to_fisheye_frame"/>
     </include>
 
     <!-- RGB processing -->
@@ -188,6 +210,11 @@ Processing enabled by this node:
       </node>
     </group>
 
+    <node pkg="nodelet" type="nodelet" name="depth_metric"
+        args="load depth_image_proc/convert_metric $(arg manager) $(arg bond)" respawn="$(arg respawn)">
+        <remap from="image_raw"        to="$(arg depth)/image_rect_raw" />
+        <remap from="image"             to="$(arg depth)/image_rect_metric" />
+    </node>
   </group>
 
 </launch>
