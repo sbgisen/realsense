@@ -58,7 +58,7 @@
   <arg name="rgb_processing"                  default="true"/>
   <arg name="debayer_processing"              default="false" />
   <arg name="ir_processing"                   default="false"/>
-  <arg name="depth_processing"                default="false"/>
+  <arg name="depth_processing"                default="true"/>
   <arg name="depth_registered_processing"     default="true"/>
   <arg name="disparity_processing"            default="false"/>
   <arg name="disparity_registered_processing" default="false"/>
@@ -107,7 +107,7 @@
       <arg name="enable_imu"               value="$(arg enable_imu)"/>
 
       <arg name="base_frame_id" value="realsense_front_link"/>
-      <!-- <arg name="depth_frame_id" value="realsense_front_depth_frame"/>
+      <arg name="depth_frame_id" value="realsense_front_depth_frame"/>
       <arg name="infra1_frame_id" value="realsense_front_left_ir_frame"/>
       <arg name="infra2_frame_id" value="realsense_front_right_ir_frame"/>
       <arg name="color_frame_id" value="realsense_front_color_frame"/>
@@ -126,7 +126,7 @@
       <arg name="aligned_depth_to_color_frame_id"   value="realsense_front_aligned_depth_to_color_frame"/>
       <arg name="aligned_depth_to_infra1_frame_id"  value="realsense_front_aligned_depth_to_infra1_frame"/>
       <arg name="aligned_depth_to_infra2_frame_id"  value="realsense_front_aligned_depth_to_infra2_frame"/>
-      <arg name="aligned_depth_to_fisheye_frame_id" value="realsense_front_aligned_depth_to_fisheye_frame"/> -->
+      <arg name="aligned_depth_to_fisheye_frame_id" value="realsense_front_aligned_depth_to_fisheye_frame"/>
     </include>
 
     <!-- RGB processing -->
@@ -167,6 +167,12 @@
         <remap from="depth_registered/points"     to="$(arg depth_registered_pub)/points" />
       </node>
     </group>
+
+    <node pkg="nodelet" type="nodelet" name="depth_metric"
+        args="load depth_image_proc/convert_metric $(arg manager) $(arg bond)" respawn="$(arg respawn)">
+        <remap from="image_raw"        to="$(arg depth)/image_rect_raw" />
+        <remap from="image"             to="$(arg depth)/image_rect_metric" />
+    </node>
   </group>
 
   <group ns="realsense_rear">
@@ -209,7 +215,7 @@
       <arg name="enable_imu"               value="$(arg enable_imu)"/>
 
       <arg name="base_frame_id" value="realsense_rear_link"/>
-      <!-- <arg name="depth_frame_id" value="realsense_rear_depth_frame"/>
+      <arg name="depth_frame_id" value="realsense_rear_depth_frame"/>
       <arg name="infra1_frame_id" value="realsense_rear_left_ir_frame"/>
       <arg name="infra2_frame_id" value="realsense_rear_right_ir_frame"/>
       <arg name="color_frame_id" value="realsense_rear_color_frame"/>
@@ -228,7 +234,7 @@
       <arg name="aligned_depth_to_color_frame_id"   value="realsense_rear_aligned_depth_to_color_frame"/>
       <arg name="aligned_depth_to_infra1_frame_id"  value="realsense_rear_aligned_depth_to_infra1_frame"/>
       <arg name="aligned_depth_to_infra2_frame_id"  value="realsense_rear_aligned_depth_to_infra2_frame"/>
-      <arg name="aligned_depth_to_fisheye_frame_id" value="realsense_rear_aligned_depth_to_fisheye_frame"/> -->
+      <arg name="aligned_depth_to_fisheye_frame_id" value="realsense_rear_aligned_depth_to_fisheye_frame"/>
     </include>
 
     <!-- RGB processing -->
@@ -269,5 +275,11 @@
         <remap from="depth_registered/points"     to="$(arg depth_registered_pub)/points" />
       </node>
     </group>
+
+    <node pkg="nodelet" type="nodelet" name="depth_metric"
+        args="load depth_image_proc/convert_metric $(arg manager) $(arg bond)" respawn="$(arg respawn)">
+        <remap from="image_raw"        to="$(arg depth)/image_rect_raw" />
+        <remap from="image"             to="$(arg depth)/image_rect_metric" />
+    </node>
   </group>
 </launch>
