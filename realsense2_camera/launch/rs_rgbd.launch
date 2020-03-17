@@ -152,6 +152,7 @@ Processing enabled by this node:
     </include>
 
     <!-- RGB processing -->
+    <!-- TODO: Set CPU priority -->
     <include if="$(arg rgb_processing)"
              file="$(find rgbd_launch)/launch/includes/rgb.launch.xml">
       <arg name="manager"                       value="$(arg manager)" />
@@ -162,7 +163,7 @@ Processing enabled by this node:
 
     <group if="$(eval depth_registered_processing and sw_registered_processing)">
       <node pkg="nodelet" type="nodelet" name="register_depth"
-            args="load depth_image_proc/register $(arg manager) $(arg bond)" respawn="$(arg respawn)">
+            args="load depth_image_proc/register $(arg manager) $(arg bond)" respawn="$(arg respawn)" launch-prefix="nice -n 19">
         <remap from="rgb/camera_info"             to="$(arg rgb)/camera_info" />
         <remap from="depth/camera_info"           to="$(arg depth)/camera_info" />
         <remap from="depth/image_rect"            to="$(arg depth)/image_rect_raw" />
@@ -171,7 +172,7 @@ Processing enabled by this node:
 
       <!-- Publish registered XYZRGB point cloud with software registered input -->
       <node pkg="nodelet" type="nodelet" name="points_xyzrgb_sw_registered"
-            args="load depth_image_proc/point_cloud_xyzrgb $(arg manager) $(arg bond)" respawn="$(arg respawn)">
+            args="load depth_image_proc/point_cloud_xyzrgb $(arg manager) $(arg bond)" respawn="$(arg respawn)" launch-prefix="nice -n 19">
         <remap from="rgb/image_rect_color"        to="$(arg rgb)/image_rect_color" />
         <remap from="rgb/camera_info"             to="$(arg rgb)/camera_info" />
         <remap from="depth_registered/image_rect" to="$(arg depth_registered_filtered)/sw_registered/image_rect_raw" />
@@ -182,7 +183,7 @@ Processing enabled by this node:
     <group if="$(eval depth_registered_processing and hw_registered_processing)">
       <!-- Publish registered XYZRGB point cloud with hardware registered input (ROS Realsense depth alignment) -->
       <node pkg="nodelet" type="nodelet" name="points_xyzrgb_hw_registered"
-            args="load depth_image_proc/point_cloud_xyzrgb $(arg manager) $(arg bond)" respawn="$(arg respawn)">
+            args="load depth_image_proc/point_cloud_xyzrgb $(arg manager) $(arg bond)" respawn="$(arg respawn)" launch-prefix="nice -n 19">
         <remap from="rgb/image_rect_color"        to="$(arg rgb)/image_rect_color" />
         <remap from="rgb/camera_info"             to="$(arg rgb)/camera_info" />
         <remap from="depth_registered/image_rect" to="$(arg depth_registered)/image_raw" />
