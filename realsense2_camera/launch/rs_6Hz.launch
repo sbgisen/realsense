@@ -52,7 +52,7 @@ Processing enabled by this node:
 
   <arg name="fisheye_width"       default="640"/>
   <arg name="fisheye_height"      default="480"/>
-  <arg name="enable_fisheye"      default="true"/>
+  <arg name="enable_fisheye"      default="false"/>
 
   <arg name="depth_width"         default="640"/>
   <arg name="depth_height"        default="480"/>
@@ -60,21 +60,21 @@ Processing enabled by this node:
 
   <arg name="infra_width"         default="640"/>
   <arg name="infra_height"        default="480"/>
-  <arg name="enable_infra1"       default="true"/>
-  <arg name="enable_infra2"       default="true"/>
+  <arg name="enable_infra1"       default="false"/>
+  <arg name="enable_infra2"       default="false"/>
 
   <arg name="color_width"         default="640"/>
   <arg name="color_height"        default="480"/>
   <arg name="enable_color"        default="true"/>
 
-  <arg name="fisheye_fps"         default="30"/>
-  <arg name="depth_fps"           default="30"/>
-  <arg name="infra_fps"           default="30"/>
-  <arg name="color_fps"           default="30"/>
+  <arg name="fisheye_fps"         default="6"/>
+  <arg name="depth_fps"           default="6"/>
+  <arg name="infra_fps"           default="6"/>
+  <arg name="color_fps"           default="6"/>
   <arg name="gyro_fps"            default="400"/>
   <arg name="accel_fps"           default="250"/>
-  <arg name="enable_gyro"         default="true"/>
-  <arg name="enable_accel"        default="true"/>
+  <arg name="enable_gyro"         default="false"/>
+  <arg name="enable_accel"        default="false"/>
 
   <arg name="enable_pointcloud"   default="false"/>
   <arg name="enable_sync"         default="true"/>
@@ -152,7 +152,7 @@ Processing enabled by this node:
     </include>
 
     <!-- RGB processing -->
-    <!-- TODO: Set CPU priority -->
+    <!-- TODO: Set CPU priority(launch-prefix="nice -n 19") -->
     <include if="$(arg rgb_processing)"
              file="$(find rgbd_launch)/launch/includes/rgb.launch.xml">
       <arg name="manager"                       value="$(arg manager)" />
@@ -160,7 +160,11 @@ Processing enabled by this node:
       <arg name="rgb"                           value="$(arg rgb)" />
       <arg name="debayer_processing"            value="$(arg debayer_processing)" />
     </include>
-
+    <node name="depth_metric" pkg="nodelet" type="nodelet"
+          args="load depth_image_proc/convert_metric $(arg manager) $(arg bond)" respawn="$(arg respawn)" launch-prefix="nice -n 19">
+      <remap from="image_raw"                  to="$(arg depth)/image_rect_raw" />
+      <remap from="image"                      to="$(arg depth)/image_rect_metric" />
+    </node>
     <group if="$(eval depth_registered_processing and sw_registered_processing)">
       <node pkg="nodelet" type="nodelet" name="register_depth"
             args="load depth_image_proc/register $(arg manager) $(arg bond)" respawn="$(arg respawn)" launch-prefix="nice -n 19">
